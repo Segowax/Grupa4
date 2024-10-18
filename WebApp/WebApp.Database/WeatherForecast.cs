@@ -1,4 +1,4 @@
-namespace WebApp.Server
+namespace WebApp.Database
 {
     public class WeatherForecast
     {
