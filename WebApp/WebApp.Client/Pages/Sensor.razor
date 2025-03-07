@@ -1,0 +1,92 @@
+﻿@page "/sensor"
+
+@inject IHttpClientFactory httpFactory
+
+
+
+<h3>Lista Sensorów</h3>
+
+
+
+@if (sensors == null)
+
+{
+
+	<p>Ładowanie danych...</p>
+
+}
+
+else
+
+{
+
+	<table border="1">
+
+		<thead>
+
+			<tr>
+
+				<th>ID Sensora</th>
+
+				<th>Nazwa</th>
+
+				<th>Czas</th>
+
+				<th>Stan</th>
+
+			</tr>
+
+		</thead>
+
+		<tbody>
+
+			@foreach (var sensor in sensors)
+
+			{
+
+				<tr>
+
+					<td>@sensor.SensorId</td>
+
+					<td>@sensor.Name</td>
+
+					<td>@sensor.EnqueuedTime</td>
+
+					<td>@sensor.Value</td>
+
+				</tr>
+
+			}
+
+		</tbody>
+
+	</table>
+
+}
+
+
+
+@code {
+
+	private List<SensorData> sensors;
+
+
+
+	protected override async Task OnInitializedAsync()
+
+	{
+
+		var httpClient = httpFactory.CreateClient("blah"); // Sprawdź, czy nazwa klienta HTTP jest poprawna
+
+		sensors = await httpClient.GetFromJsonAsync<List<SensorData>>("api/Sensor/GetAll");
+
+	}
+
+	public class SensorData
+	{
+		public string SensorId { get; set; }
+		public string Name { get; set; }
+		public DateTime EnqueuedTime { get; set; }
+		public object Value { get; set; }
+	}
+}

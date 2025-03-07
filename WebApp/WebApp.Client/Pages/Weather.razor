@@ -1,57 +1,100 @@
 ﻿@page "/weather"
-@inject HttpClient Http
 
-<PageTitle>Weather</PageTitle>
+@inject IHttpClientFactory httpFactory
 
-<h1>Weather</h1>
 
-<p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+<h3>Lista Sensorów</h3>
+
+
+
+@if (sensors == null)
+
 {
-    <p><em>Loading...</em></p>
+
+    <p>Ładowanie danych...</p>
+
 }
+
 else
+
 {
-    <table class="table">
+
+    <table border="1">
+
         <thead>
+
             <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+
+                <th>ID Sensora</th>
+
+                <th>Nazwa</th>
+
+                <th>Czas</th>
+
+                <th>Stan</th>
+
             </tr>
+
         </thead>
+
         <tbody>
-            @foreach (var forecast in forecasts)
+
+            @foreach (var sensor in sensors)
+
             {
+
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+
+                    <td>@sensor.SensorId</td>
+
+                    <td>@sensor.Name</td>
+
+                    <td>@sensor.EnqueuedTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+
+                    <td>@sensor.Value</td>
+
                 </tr>
+
             }
+
         </tbody>
+
     </table>
+
 }
+
+
 
 @code {
-    private WeatherForecast[]? forecasts;
+
+    private List<Sensor>? sensors;
+
+
 
     protected override async Task OnInitializedAsync()
+
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+
+        var httpClient = httpFactory.CreateClient("blah"); // Nazwa klienta HTTP musi być poprawna!
+
+        sensors = await httpClient.GetFromJsonAsync<List<Sensor>>("api/Sensor/GetAll");
     }
 
-    public class WeatherForecast
+
+
+    public class Sensor
+
     {
-        public DateOnly Date { get; set; }
 
-        public int TemperatureC { get; set; }
+        public string SensorId { get; set; }
 
-        public string? Summary { get; set; }
+        public string Name { get; set; }
 
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        public DateTime EnqueuedTime { get; set; }
+
+        public string Value { get; set; }
+
     }
+
 }
